@@ -1,0 +1,37 @@
+
+IMPORTANT:
+For your own photos to appear on the website, please rename your image files in this "pictures" folder to match the list below exactly.
+File extensions should be .jpg (or update the code if they are .png).
+
+--- LOGO ---
+logo.png             -> Your brand logo (Header and Footer). Recommended transparent PNG.
+
+--- HOMEPAGE BANNERS ---
+hero.jpg             -> The main large image at the top of the home page
+values-bg.jpg        -> The dark leather background for "Master Craftsmanship" section
+atelier.jpg          -> The image for "The Legacy/Uncompromising Excellence" section
+
+--- CATEGORY & NEWSLETTER ---
+cat-men.jpg          -> The "For Him" split section image
+cat-women.jpg        -> The "For Her" split section image
+news-1.jpg           -> Newsletter background 1
+news-2.jpg           -> Newsletter background 2
+news-3.jpg           -> Newsletter background 3
+news-4.jpg           -> Newsletter background 4
+
+--- PAGE HEADERS ---
+banner-men.jpg       -> Top banner for Men's page
+banner-women.jpg     -> Top banner for Women's page
+banner-all.jpg       -> Top banner for Collection/Shop page
+
+--- PRODUCTS (Rename your shoe photos to these) ---
+p1.jpg   -> The Midnight Oxford
+p2.jpg   -> Velvet Royale Loafer
+p3.jpg   -> Aurum Sneaker
+p4.jpg   -> Obsidian Boot
+p5.jpg   -> Celestial Heel
+p6.jpg   -> Monarch Derby
+p7.jpg   -> Seraphina Pump
+p8.jpg   -> Milanese Ankle Boot
+p9.jpg   -> Riviera Flat
+p10.jpg  -> Luna Sneaker
