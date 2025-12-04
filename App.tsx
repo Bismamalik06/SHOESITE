@@ -6,6 +6,7 @@ import { PRODUCTS, SHIPPING_COST, TAX_RATE } from './constants';
 import { Product, CartItem, Page } from './types';
 import { Button } from './components/Button';
 import { StylistChat } from './components/StylistChat';
+import Swal from 'sweetalert2';
 
 // --- Components defined locally for single-file XML structure optimization ---
 
@@ -268,12 +269,12 @@ const AtelierSection = () => (
       >
         <div className="aspect-[3/4] overflow-hidden">
           <img
-            src="https://images.unsplash.com/photo-1621045246187-6e6b0a1d4a0f?q=80&w=1200&auto=format&fit=crop"
+            src="./pictures/Enhanced Premium Sneaker Wall.png"
             alt="Craftsmanship"
             className="w-full h-full object-cover hover:scale-105 transition-transform duration-700"
             onError={(e) => {
               // Fallback if URL fails
-              e.currentTarget.src = "https://images.unsplash.com/photo-1581655353564-df123a1eb820?q=80&w=1000&auto=format&fit=crop";
+              e.currentTarget.src = "./pictures/Enhanced Premium Sneaker Wall.png";
             }}
           />
         </div>
@@ -288,10 +289,12 @@ const AtelierSection = () => (
 // NEWSLETTER SECTION
 const NewsletterSection = () => {
   const images = [
-    "https://images.unsplash.com/photo-1469334031218-e382a71b716b?q=80&w=1600&auto=format&fit=crop",
-    "https://images.unsplash.com/photo-1549298916-b41d501d3772?q=80&w=1600&auto=format&fit=crop",
-    "https://images.unsplash.com/photo-1515347619252-60a6bf4fffce?q=80&w=1600&auto=format&fit=crop",
-    "https://images.unsplash.com/photo-1441986300917-64674bd600d8?q=80&w=1600&auto=format&fit=crop"
+    "./pictures/carousel 6.webp",
+    "./pictures/carousel 2.webp",
+    "./pictures/carousel.jpg",
+    "./pictures/carousel 5.webp",
+    "./pictures/carousel 8.webp",
+    "./pictures/Premium Accessory Backdrop.png"
   ];
 
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
@@ -337,14 +340,33 @@ const NewsletterSection = () => {
         <p className="text-neutral-300 mb-8 max-w-md mx-auto font-light">
           Subscribe to receive complimentary shipping on your first order and exclusive access to private sales.
         </p>
-        <div className="flex max-w-md mx-auto border-b border-neutral-500 focus-within:border-[#d4af37] transition-colors pb-2">
+        <form onSubmit={(e) => {
+          e.preventDefault();
+          const form = e.target as HTMLFormElement;
+          const email = (form.elements.namedItem('email') as HTMLInputElement).value;
+          if (email) {
+            Swal.fire({
+              title: 'Welcome to the Circle!',
+              text: 'You\'ve been added to our exclusive list.',
+              icon: 'success',
+              confirmButtonText: 'Excellent',
+              background: '#0a0a0a',
+              color: '#fff',
+              confirmButtonColor: '#d4af37',
+              iconColor: '#d4af37',
+            });
+            form.reset();
+          }
+        }} className="flex max-w-md mx-auto border-b border-neutral-500 focus-within:border-[#d4af37] transition-colors pb-2">
           <input
             type="email"
+            name="email"
             placeholder="Email Address"
+            required
             className="bg-transparent flex-1 text-white placeholder-neutral-400 focus:outline-none"
           />
-          <button className="text-[#d4af37] uppercase tracking-widest text-xs font-bold hover:text-white transition">Subscribe</button>
-        </div>
+          <button type="submit" className="text-[#d4af37] uppercase tracking-widest text-xs font-bold hover:text-white transition">Subscribe</button>
+        </form>
       </div>
     </section>
   );
@@ -490,7 +512,7 @@ const ProductList = ({
         <div className="absolute inset-0">
           <img
             src={
-              gender === 'Men' ? "https://images.unsplash.com/photo-1487222477894-8943e31ef7b2?q=80&w=1600&auto=format&fit=crop" :
+              gender === 'Men' ? "./pictures/MI MARTZ E-commerce Banner.png" :
                 gender === 'Women' ? "./pictures/women-banner.png" :
                   "./pictures/carousel.jpg"
             }
@@ -585,6 +607,22 @@ const ProductDetail = ({
   onBack: () => void;
   onAddToCart: (p: Product) => void;
 }) => {
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const productImages = product.images || [product.image];
+  const hasMultipleImages = productImages.length > 1;
+
+  const nextImage = () => {
+    setCurrentImageIndex((prev) => (prev + 1) % productImages.length);
+  };
+
+  const prevImage = () => {
+    setCurrentImageIndex((prev) => (prev - 1 + productImages.length) % productImages.length);
+  };
+
+  const goToImage = (index: number) => {
+    setCurrentImageIndex(index);
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -597,9 +635,57 @@ const ProductDetail = ({
           initial={{ x: -50, opacity: 0 }}
           animate={{ x: 0, opacity: 1 }}
           transition={{ duration: 0.6 }}
-          className="relative aspect-[4/5] bg-neutral-900 overflow-hidden shadow-2xl"
+          className="relative aspect-[4/5] bg-neutral-900 overflow-hidden shadow-2xl group"
         >
-          <img src={product.image} alt={product.name} className="w-full h-full object-cover" />
+          <AnimatePresence mode="wait">
+            <motion.img
+              key={currentImageIndex}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.3 }}
+              src={productImages[currentImageIndex]}
+              alt={product.name}
+              className="w-full h-full object-cover"
+              onError={(e) => {
+                e.currentTarget.src = "https://images.unsplash.com/photo-1549298916-b41d501d3772?q=80&w=800&auto=format&fit=crop";
+              }}
+            />
+          </AnimatePresence>
+
+          {/* Navigation Arrows - Only show if multiple images */}
+          {hasMultipleImages && (
+            <>
+              <button
+                onClick={prevImage}
+                className="absolute left-4 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white p-3 rounded-full opacity-0 group-hover:opacity-100 transition-opacity z-10"
+              >
+                <ChevronRight className="w-5 h-5 rotate-180" />
+              </button>
+              <button
+                onClick={nextImage}
+                className="absolute right-4 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white p-3 rounded-full opacity-0 group-hover:opacity-100 transition-opacity z-10"
+              >
+                <ChevronRight className="w-5 h-5" />
+              </button>
+            </>
+          )}
+
+          {/* Dot Indicators - Only show if multiple images */}
+          {hasMultipleImages && (
+            <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-2 z-10">
+              {productImages.map((_, index) => (
+                <button
+                  key={index}
+                  onClick={() => goToImage(index)}
+                  className={`w-2 h-2 rounded-full transition-all ${index === currentImageIndex
+                    ? 'bg-[#d4af37] w-6'
+                    : 'bg-white/50 hover:bg-white/80'
+                    }`}
+                />
+              ))}
+            </div>
+          )}
         </motion.div>
 
         <motion.div
@@ -698,14 +784,27 @@ const ContactPage = () => {
           </div>
 
           {/* Simple Form */}
-          <form className="space-y-6">
+          <form className="space-y-6" onSubmit={(e) => {
+            e.preventDefault();
+            Swal.fire({
+              title: 'Message Sent!',
+              text: 'Our concierge team will respond within 24 hours.',
+              icon: 'success',
+              confirmButtonText: 'Perfect',
+              background: '#0a0a0a',
+              color: '#fff',
+              confirmButtonColor: '#d4af37',
+              iconColor: '#d4af37',
+            });
+            (e.target as HTMLFormElement).reset();
+          }}>
             <div className="grid grid-cols-2 gap-4">
-              <input placeholder="First Name" className="bg-transparent border-b border-neutral-700 p-3 text-white focus:outline-none focus:border-[#d4af37] transition w-full" />
-              <input placeholder="Last Name" className="bg-transparent border-b border-neutral-700 p-3 text-white focus:outline-none focus:border-[#d4af37] transition w-full" />
+              <input required placeholder="First Name" className="bg-transparent border-b border-neutral-700 p-3 text-white focus:outline-none focus:border-[#d4af37] transition w-full" />
+              <input required placeholder="Last Name" className="bg-transparent border-b border-neutral-700 p-3 text-white focus:outline-none focus:border-[#d4af37] transition w-full" />
             </div>
-            <input type="email" placeholder="Email Address" className="bg-transparent border-b border-neutral-700 p-3 text-white focus:outline-none focus:border-[#d4af37] transition w-full" />
-            <textarea placeholder="Your Message" rows={4} className="bg-transparent border-b border-neutral-700 p-3 text-white focus:outline-none focus:border-[#d4af37] transition w-full"></textarea>
-            <Button variant="outline" className="w-full">Send Message</Button>
+            <input required type="email" placeholder="Email Address" className="bg-transparent border-b border-neutral-700 p-3 text-white focus:outline-none focus:border-[#d4af37] transition w-full" />
+            <textarea required placeholder="Your Message" rows={4} className="bg-transparent border-b border-neutral-700 p-3 text-white focus:outline-none focus:border-[#d4af37] transition w-full"></textarea>
+            <Button type="submit" variant="outline" className="w-full">Send Message</Button>
           </form>
         </div>
       </div>
@@ -1108,6 +1207,22 @@ export const App: React.FC = () => {
       }
       return [...prev, { ...product, quantity: 1 }];
     });
+
+    // Show SweetAlert notification
+    Swal.fire({
+      toast: true,
+      position: 'top-end',
+      icon: 'success',
+      title: 'Added to Bag',
+      text: product.name,
+      showConfirmButton: false,
+      timer: 2000,
+      timerProgressBar: true,
+      background: '#0a0a0a',
+      color: '#fff',
+      iconColor: '#d4af37',
+    });
+
     setIsCartOpen(true);
   };
 
@@ -1122,7 +1237,35 @@ export const App: React.FC = () => {
   };
 
   const removeFromCart = (id: string) => {
-    setCartItems(prev => prev.filter(item => item.id !== id));
+    const item = cartItems.find(i => i.id === id);
+    Swal.fire({
+      title: 'Remove Item?',
+      text: `Remove ${item?.name} from your bag?`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Yes, remove it',
+      cancelButtonText: 'Keep it',
+      background: '#0a0a0a',
+      color: '#fff',
+      confirmButtonColor: '#d4af37',
+      cancelButtonColor: '#333',
+      iconColor: '#d4af37',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        setCartItems(prev => prev.filter(item => item.id !== id));
+        Swal.fire({
+          toast: true,
+          position: 'top-end',
+          icon: 'info',
+          title: 'Item Removed',
+          showConfirmButton: false,
+          timer: 1500,
+          background: '#0a0a0a',
+          color: '#fff',
+          iconColor: '#d4af37',
+        });
+      }
+    });
   };
 
   // Navigation Logic
@@ -1146,9 +1289,24 @@ export const App: React.FC = () => {
   };
 
   const handleOrderComplete = () => {
-    alert("Thank you for your order! Your luxury footwear is being prepared.");
-    setCartItems([]);
-    handleNavClick(Page.HOME);
+    Swal.fire({
+      title: 'Order Confirmed!',
+      html: `
+        <div style="text-align: center;">
+          <p style="margin-bottom: 10px;">Thank you for your purchase!</p>
+          <p style="color: #d4af37;">Your luxury footwear is being prepared with care.</p>
+        </div>
+      `,
+      icon: 'success',
+      confirmButtonText: 'Continue Shopping',
+      background: '#0a0a0a',
+      color: '#fff',
+      confirmButtonColor: '#d4af37',
+      iconColor: '#d4af37',
+    }).then(() => {
+      setCartItems([]);
+      handleNavClick(Page.HOME);
+    });
   };
 
   return (
@@ -1170,7 +1328,7 @@ export const App: React.FC = () => {
               {/* Background Image and Overlay */}
               <div className="absolute inset-0 z-0">
                 <img
-                  src="https://images.unsplash.com/photo-1506197603052-3cc9c3a201bd?q=80&w=2000&auto=format&fit=crop"
+                  src="./pictures/carousel 8.webp"
                   alt="Luxury Leather Background"
                   className="w-full h-full object-cover"
                 />
